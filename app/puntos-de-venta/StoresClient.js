@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 
 function normalize(text) {
   return (text || "")
@@ -172,18 +173,18 @@ export default function StoresClient({ stores: allStores }) {
           comprar online con envío a todo el Perú.
         </p>
         <div className="flex gap-2">
-          <a
+          <Link
             href="/contact"
             className="inline-block bg-black text-white px-5 py-3 font-semibold"
           >
             Contacto
-          </a>
-          <a
+          </Link>
+          <Link
             href="/blog"
             className="inline-block border border-gray-300 px-5 py-3 font-semibold"
           >
             Ver Blog
-          </a>
+          </Link>
         </div>
       </div>
     </section>
