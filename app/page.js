@@ -1,103 +1,106 @@
-import Image from "next/image";
+import Banner from "./banner/banner";
+import PromoHero from "./PromoHero";
+import BrandsStrip from "./BrandsStrip";
+// DATA desde content (fuera de app)
+import { products } from "../content/products";
+
+/**
+ * Home: Banner > Recomendados > PromoHero > BrandsStrip
+ * Recomendados: 2 nicho (primero) + 2 árabes (después), en el orden indicado.
+ */
+export const metadata = {
+  title: "Essenza",
+};
+
+const recommendedSlugs = [
+  // Perfumes nicho
+  "bergamot-niche",
+  "dara-caro-sweet-obsession",
+  // Perfumes árabes
+  "sultan-al-zahab",
+  "dahmir-al-sahra",
+];
+
+function formatPrice(n) {
+  // Formato tipo S/ 1,439.00
+  return new Intl.NumberFormat("es-PE", {
+    style: "currency",
+    currency: "PEN",
+    minimumFractionDigits: 2,
+  }).format(Number(n));
+}
+
+function ProductCard({ p }) {
+  const href = `/products/${p.slug}`;
+  const imgSrc = p.images?.[0] || "/placeholder.png";
+  const isOut = p.stock <= 0;
+
+  return (
+    <div className="group">
+      <a href={href} className="block overflow-hidden rounded-md bg-white">
+        <div className="aspect-[3/4] w-full overflow-hidden bg-white">
+          <img
+            src={imgSrc}
+            alt={`${p.brand} ${p.name}`}
+            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+            loading="lazy"
+          />
+        </div>
+      </a>
+
+      <div className="mt-3">
+        <div className="text-[11px] tracking-[0.18em] text-slate-500">
+          {p.brand}
+        </div>
+        <a href={href} className="block">
+          <h3 className="mt-1 text-base font-semibold text-slate-900 group-hover:underline underline-offset-4">
+            {p.name}
+          </h3>
+        </a>
+        <div className="mt-1 text-slate-900">
+          {isOut ? (
+            <span className="inline-flex items-center rounded bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-700">
+              Agotado
+            </span>
+          ) : (
+            <span className="text-lg font-semibold">{formatPrice(p.price)}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const recommended = products
+    .filter((p) => recommendedSlugs.includes(p.slug) && p.stock > 0)
+    .sort((a, b) => recommendedSlugs.indexOf(a.slug) - recommendedSlugs.indexOf(b.slug));
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <>
+      {/* 1) Banner (solo en Home) */}
+      <Banner />
+
+      {/* 2) Nuestras Recomendaciones */}
+      <section className="bg-white">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 py-10 md:py-14">
+          <h2 className="text-center text-2xl md:text-3xl font-semibold text-slate-900">
+            Nuestras Recomendaciones
+          </h2>
+
+          <div className="mt-8 grid grid-cols-2 gap-6 md:mt-10 md:grid-cols-4 md:gap-8">
+            {recommended.map((p) => (
+              <ProductCard key={p.slug} p={p} />
+            ))}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+
+      {/* 3) PromoHero (solo en Home) */}
+      <PromoHero />
+
+      {/* 4) Nuestras Marcas (solo en Home) */}
+      <BrandsStrip />
+    </>
   );
 }

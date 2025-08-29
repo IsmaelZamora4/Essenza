@@ -1,0 +1,55 @@
+.viewer {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.imgWrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: zoom-in;
+  /* variables para el origen del zoom */
+  --x: 50%;
+  --y: 50%;
+}
+
+.img {
+  transform-origin: var(--x) var(--y);
+  transition: transform 220ms ease, opacity 220ms ease;
+  will-change: transform, opacity;
+}
+
+/* Al pasar el cursor, aplicar zoom suave */
+.zoomed .img {
+  transform: scale(1.45);
+  animation: none !important; /* evita pelear con la animación de entrada */
+}
+
+/* Animación de entrada según dirección */
+.imgWrap[data-dir="right"] .img {
+  animation: enterRight 260ms ease both;
+}
+.imgWrap[data-dir="left"] .img {
+  animation: enterLeft 260ms ease both;
+}
+
+@keyframes enterRight {
+  from {
+    opacity: 0;
+    transform: translateX(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes enterLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
